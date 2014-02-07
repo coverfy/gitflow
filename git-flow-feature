@@ -335,7 +335,6 @@ cmd_finish() {
 		else
 			git_do merge --squash "$BRANCH"
 			git_do commit
-			git_do merge "$BRANCH"
 		fi
 	fi
 
