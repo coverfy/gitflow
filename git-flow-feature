@@ -327,7 +327,12 @@ cmd_finish() {
 	if [ "$(git rev-list -n2 "$DEVELOP_BRANCH..$BRANCH" | wc -l)" -eq 1 ]; then
 		git merge --ff "$BRANCH"
 	else
-		git merge --no-ff "$BRANCH"
+		if noflag squash; then
+		    git_do merge --no-ff "$BRANCH"
+		else
+			git_do merge --squash "$BRANCH"
+			git_do commit
+		fi
 	fi
 
 	if [ $? -ne 0 ]; then
