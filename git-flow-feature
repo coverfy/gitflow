@@ -201,6 +201,7 @@ parse_remote_name() {
 
 cmd_start() {
 	DEFINE_boolean fetch false 'fetch from origin before performing local operation' F
+	DEFINE_boolean force_pull true "force pull (develop) branch before start if diverged" l
 	parse_args "$@"
 	BASE=${2:-$DEVELOP_BRANCH}
 	require_name_arg
@@ -217,6 +218,11 @@ cmd_start() {
 	# isn't behind it (to avoid unnecessary rebasing)
 	if git_branch_exists "$ORIGIN/$DEVELOP_BRANCH"; then
 		require_branches_equal "$DEVELOP_BRANCH" "$ORIGIN/$DEVELOP_BRANCH"
+		if flag force_pull; then
+                        require_branches_equal_force "$DEVELOP_BRANCH" "$ORIGIN/$DEVELOP_BRANCH"
+                 else
+                        require_branches_equal "$DEVELOP_BRANCH" "$ORIGIN/$DEVELOP_BRANCH"
+                 fi
 	fi
 
 	# create branch
@@ -236,8 +242,8 @@ cmd_start() {
 }
 
 cmd_finish() {
-	DEFINE_boolean fetch true "fetch from $ORIGIN before performing finish" F
-	DEFINE_boolean rebase true "rebase instead of merge" r
+	DEFINE_boolean fetch false "fetch from $ORIGIN before performing finish" F
+	DEFINE_boolean rebase false "rebase instead of merge" r
 	DEFINE_boolean keep false "keep branch after performing finish" k
 	DEFINE_boolean force_delete true "force delete feature branch after finish" D
 	DEFINE_boolean force_pull true "force pull (develop) branch before finish if diverged" p
@@ -327,16 +333,17 @@ cmd_finish() {
 
 	# merge into BASE
 	git_do checkout "$DEVELOP_BRANCH"
-	if [ "$(git rev-list -n2 "$DEVELOP_BRANCH..$BRANCH" | wc -l)" -eq 1 ]; then
-		git_do merge --ff "$BRANCH"
-	else
+
+	#if [ "$(git rev-list -n2 "$DEVELOP_BRANCH..$BRANCH" | wc -l)" -eq 1 ]; then
+	#	git_do merge --ff "$BRANCH"
+	#else
 		if noflag squash; then
-		    git_do merge --no-ff "$BRANCH"
+			git_do merge --no-ff "$BRANCH"
 		else
 			git_do merge --squash "$BRANCH"
 			git_do commit
 		fi
-	fi
+	#fi
 
 	if [ $? -ne 0 ]; then
 		# oops.. we have a merge conflict!
