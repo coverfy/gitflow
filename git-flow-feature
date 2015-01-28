@@ -369,11 +369,8 @@ helper_finish_cleanup() {
 	require_branch "$BRANCH"
 	require_clean_working_tree
 
-	# delete branch
-	if flag fetch; then
-		git_do push "$ORIGIN" ":refs/heads/$BRANCH"
-	fi
-
+	# delete branch from origin
+	git_do push "$ORIGIN" ":refs/heads/$BRANCH"
 
 	if noflag keep; then
 		if flag force_delete; then
@@ -392,6 +389,7 @@ helper_finish_cleanup() {
 	else
 		echo "- Feature branch '$BRANCH' has been removed"
 	fi
+	echo "- Feature branch has been removed from origin"
 	echo "- You are now on branch '$DEVELOP_BRANCH'"
 	echo
 }
