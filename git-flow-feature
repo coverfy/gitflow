@@ -380,6 +380,10 @@ helper_finish_cleanup() {
 		fi
 	fi
 
+	git_do push "$ORIGIN" "$DEVELOP_BRANCH" || \
+		die "Could not push to $DEVELOP_BRANCH from $ORIGIN."
+
+
 	echo
 	echo "Summary of actions:"
 	echo "- The feature branch '$BRANCH' was merged into '$DEVELOP_BRANCH'"
