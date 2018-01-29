@@ -17,7 +17,7 @@ if [ -z "$REPO_NAME" ] ; then
 fi
 
 if [ -z "$REPO_HOME" ] ; then
-	REPO_HOME="https://github.com/Offerum/gitflow.git"
+	REPO_HOME="https://github.com/coverfy/gitflow.git"
 fi
 
 EXEC_FILES="git-flow"
